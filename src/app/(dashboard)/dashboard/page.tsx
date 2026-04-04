@@ -79,7 +79,6 @@ export default async function DashboardPage() {
       interventions={normalizedInterventions}
       activity={normalizedActivity}
       users={normalizedUsers}
-      suppressHydrationWarning
     />
   );
 }
