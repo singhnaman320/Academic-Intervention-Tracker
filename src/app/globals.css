@@ -1,26 +1,99 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4efe6;
+  --surface: #f8f2e8;
+  --surface-strong: #ffffff;
+  --foreground: #1d2a32;
+  --muted: #61717f;
+  --border: rgba(29, 42, 50, 0.12);
+  --primary: #0f766e;
+  --primary-strong: #115e59;
+  --accent: #f59e0b;
+  --danger: #dc2626;
+  --success: #15803d;
+  --ring: rgba(15, 118, 110, 0.2);
+}
+
+.dark {
+  --background: #09131a;
+  --surface: #101b23;
+  --surface-strong: #14222c;
+  --foreground: #ecf4f2;
+  --muted: #9ab0b9;
+  --border: rgba(159, 194, 203, 0.14);
+  --primary: #2dd4bf;
+  --primary-strong: #14b8a6;
+  --accent: #fbbf24;
+  --danger: #f87171;
+  --success: #4ade80;
+  --ring: rgba(45, 212, 191, 0.24);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(245, 158, 11, 0.16), transparent 30%),
+    radial-gradient(circle at top right, rgba(15, 118, 110, 0.14), transparent 26%),
+    linear-gradient(180deg, #fbf7f1 0%, var(--background) 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(251, 191, 36, 0.09), transparent 26%),
+    radial-gradient(circle at top right, rgba(45, 212, 191, 0.08), transparent 24%),
+    linear-gradient(180deg, #081017 0%, var(--background) 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(15, 118, 110, 0.18);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
