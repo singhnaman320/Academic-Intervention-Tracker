@@ -1,5 +1,4 @@
 import { ThemeProvider } from "@/contexts/theme-context";
-import { SiteFooter } from "@/components/site-footer";
 import { getSessionUser } from "@/lib/auth";
 
 export default async function AuthLayout({
@@ -12,7 +11,6 @@ export default async function AuthLayout({
     <ThemeProvider>
       <main className="flex min-h-screen flex-col">
         <div className="flex-1">{children}</div>
-        <SiteFooter />
       </main>
     </ThemeProvider>
   );

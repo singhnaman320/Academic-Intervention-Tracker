@@ -41,32 +41,32 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   }
 
   return (
-    <Card className="w-full max-w-md p-6 sm:p-8">
-      <div className="mb-6 sm:mb-8 space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+    <Card className="w-full max-w-md p-4 sm:p-6 lg:p-8">
+      <div className="mb-4 sm:mb-6 lg:mb-8 space-y-2 sm:space-y-3">
+        <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] text-primary">
           Academic Intervention Tracker
         </p>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground">
           {mode === "login" ? "Welcome back" : "Create the first admin account"}
         </h1>
-        <p className="text-sm text-muted">
+        <p className="text-xs sm:text-sm text-muted">
           {mode === "login"
             ? "Sign in to manage at-risk students, interventions, and staff activity."
             : "Bootstrap the platform with the first secure administrator account."}
         </p>
       </div>
 
-      <form action={onSubmit} className="space-y-4">
-        {mode === "register" ? <Input name="name" placeholder="Full name" required /> : null}
-        <Input name="email" type="email" placeholder="Email address" required />
-        <Input name="password" type="password" placeholder="Password" required minLength={8} />
+      <form action={onSubmit} className="space-y-3 sm:space-y-4">
+        {mode === "register" ? <Input name="name" placeholder="Full name" required className="text-sm" /> : null}
+        <Input name="email" type="email" placeholder="Email address" required className="text-sm" />
+        <Input name="password" type="password" placeholder="Password" required minLength={8} className="text-sm" />
         {mode === "register" ? (
-          <Select name="role" defaultValue="admin" disabled>
+          <Select name="role" defaultValue="admin" disabled className="text-sm">
             <option value="admin">Administrator</option>
           </Select>
         ) : null}
-        {error ? <p className="text-sm text-danger">{error}</p> : null}
-        <Button type="submit" className="w-full" disabled={pending}>
+        {error ? <p className="text-xs sm:text-sm text-danger">{error}</p> : null}
+        <Button type="submit" className="w-full text-sm" disabled={pending}>
           {pending ? "Please wait..." : mode === "login" ? "Sign in" : "Create account"}
         </Button>
       </form>

@@ -155,7 +155,7 @@ export function Select({
         disabled={disabled}
         onClick={() => setOpen((current) => !current)}
         className={cn(
-          "flex w-full items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60",
+          "flex w-full items-center justify-between rounded-xl sm:rounded-2xl border border-border bg-surface px-3 py-2 sm:px-4 sm:py-3 text-left text-xs sm:text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60",
           open && "border-primary ring-2 ring-primary/20",
         )}
         aria-haspopup="listbox"

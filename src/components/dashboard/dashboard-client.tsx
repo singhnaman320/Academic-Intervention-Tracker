@@ -234,56 +234,57 @@ export function DashboardClient({
   return (
     <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6 lg:gap-8">
-        <Card className="overflow-hidden bg-gradient-to-r from-stone-950 via-teal-900 to-teal-700 p-8 text-white dark:from-stone-800 dark:via-teal-800 dark:to-teal-600">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-teal-100">
+        <Card className="overflow-hidden bg-gradient-to-r from-stone-950 via-teal-900 to-teal-700 p-4 sm:p-6 lg:p-8 text-white dark:from-stone-800 dark:via-teal-800 dark:to-teal-600">
+          <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl space-y-3 sm:space-y-4">
+              <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.35em] text-teal-100">
                 Intervention Intelligence Hub
               </p>
-              <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold leading-tight">
                 Support students before risk turns into attrition.
               </h1>
-              <p className="max-w-2xl text-sm text-teal-50/90 sm:text-base">
+              <p className="max-w-2xl text-xs sm:text-sm text-teal-50/90">
                 Centralize intervention workflows, role-based coordination, and attendance-performance risk tracking in one responsive Next.js workspace.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Badge tone={currentUser.role}>{currentUser.role}</Badge>
               <Button
                 variant="secondary"
                 onClick={() => runAction(signOut)}
                 disabled={pending}
+                className="text-xs sm:text-sm"
               >
-                <LogOut className="mr-2 h-4 w-4" /> Sign out
+                <LogOut className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Sign out
               </Button>
             </div>
           </div>
         </Card>
 
-        <section className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
             label="Total students"
             value={String(summary.totalStudents)}
             helper="Profiles under active monitoring"
-            icon={<Users className="h-5 w-5" />}
+            icon={<Users className="h-4 w-4 sm:h-5 sm:w-5" />}
           />
           <MetricCard
             label="Urgent risk"
             value={String(summary.urgentStudents)}
             helper="High-priority learners requiring attention"
-            icon={<Shield className="h-5 w-5" />}
+            icon={<Shield className="h-4 w-4 sm:h-5 sm:w-5" />}
           />
           <MetricCard
             label="Avg attendance"
             value={formatPercent(summary.averageAttendance)}
             helper="Current cohort attendance trend"
-            icon={<Sparkles className="h-5 w-5" />}
+            icon={<Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />}
           />
           <MetricCard
             label="Avg performance"
             value={formatPercent(summary.averagePerformance)}
             helper="Average assessment outcomes"
-            icon={<Shield className="h-5 w-5" />}
+            icon={<Shield className="h-4 w-4 sm:h-5 sm:w-5" />}
           />
         </section>
 
@@ -298,11 +299,11 @@ export function DashboardClient({
       </div>
 
         <section className="grid gap-4 grid-cols-1 lg:grid-cols-[1.15fr_0.85fr]">
-          <Card className="p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <Card className="p-4 sm:p-6">
+            <div className="mb-4 sm:mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-2xl font-semibold">Student risk board</h2>
-                <p className="text-sm text-muted">
+                <h2 className="text-xl sm:text-2xl font-semibold">Student risk board</h2>
+                <p className="text-xs sm:text-sm text-muted">
                   Students are automatically scored using attendance and performance signals.
                 </p>
               </div>
@@ -311,21 +312,21 @@ export function DashboardClient({
                 onClick={() => {
                   window.location.href = "/api/students/export";
                 }}
-                className="inline-flex items-center gap-2 rounded-2xl border border-border bg-surface-strong px-4 py-2 text-sm font-semibold hover:bg-surface transition dark:bg-surface-strong dark:hover:bg-surface"
+                className="inline-flex items-center gap-2 rounded-2xl border border-border bg-surface-strong px-3 py-2 text-xs sm:px-4 sm:py-2 sm:text-sm font-semibold hover:bg-surface transition dark:bg-surface-strong dark:hover:bg-surface"
               >
-                <Download className="h-4 w-4" /> Export CSV
+                <Download className="h-3 w-3 sm:h-4 sm:w-4" /> Export CSV
               </button>
             </div>
-            <div className="space-y-4 max-h-[48rem] overflow-y-auto scrollbar-hide cursor-grab active:cursor-grabbing">
+            <div className="space-y-3 sm:space-y-4 max-h-[48rem] overflow-y-auto scrollbar-hide cursor-grab active:cursor-grabbing">
               {studentsWithInterventions.map((student) => (
-                <Card key={student._id} className="border bg-surface-strong p-5 shadow-none dark:bg-surface-strong dark:border-border">
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+                <Card key={student._id} className="border bg-surface-strong p-3 sm:p-5 shadow-none dark:bg-surface-strong dark:border-border">
+                  <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
                     <div className="space-y-2 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-lg font-semibold break-words">
-                          {student.firstName} {student.lastName} | {student.gradeLevel} | {student.guardianEmail}
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                        <h3 className="text-sm sm:text-lg font-semibold break-words">
+                          {student.firstName} {student.lastName}
                         </h3>
-                        <Badge tone={student.status}>
+                        <Badge tone={student.status} className="text-xs">
                           {student.status.replace("-", " ")}
                         </Badge>
                         <Badge
@@ -336,41 +337,44 @@ export function DashboardClient({
                                 ? "medium"
                                 : "low"
                           }
+                          className="text-xs"
                         >
                           Risk {student.riskScore}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted break-words">
-                        {student.gradeLevel} | Guardian: {student.guardianName} | {student.guardianEmail}
-                      </p>
-                      <p className="text-sm text-foreground break-words">
+                      <div className="text-xs sm:text-sm text-muted break-words space-y-1">
+                        <p>{student.gradeLevel} | Grade Level</p>
+                        <p>Guardian: {student.guardianName}</p>
+                        <p>{student.guardianEmail}</p>
+                      </div>
+                      <p className="text-xs sm:text-sm text-foreground break-words">
                         {student.notes || "No notes yet."}
                       </p>
                     </div>
-                    <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3 sm:gap-3 lg:min-w-[240px]">
+                    <div className="grid grid-cols-1 gap-2 text-xs sm:text-sm sm:grid-cols-3 sm:gap-3 lg:min-w-[240px]">
                       <StatPill label="Attendance" value={formatPercent(student.attendanceRate)} />
                       <StatPill label="Score" value={formatPercent(student.averageScore)} />
                       <StatPill label="Updated" value={formatDate(student.updatedAt)} />
                     </div>
                   </div>
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2">
                     {student.interventions.length === 0 ? (
-                      <span className="text-sm text-muted">No interventions yet.</span>
+                      <span className="text-xs sm:text-sm text-muted">No interventions yet.</span>
                     ) : null}
                     {student.interventions.map((item) => (
                       <button
                         key={item._id}
                         type="button"
                         onClick={() => runAction(() => deleteIntervention(item._id))}
-                        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium dark:bg-surface dark:border-border"
+                        className="inline-flex items-center gap-1 sm:gap-2 rounded-full border border-border bg-surface px-2 py-1 text-xs font-medium dark:bg-surface dark:border-border"
                       >
-                        <Badge tone={item.priority}>{item.priority}</Badge>
-                        <span>{item.title}</span>
+                        <Badge tone={item.priority} className="text-xs">{item.priority}</Badge>
+                        <span className="truncate max-w-[100px] sm:max-w-none">{item.title}</span>
                       </button>
                     ))}
                     <Button
                       variant="ghost"
-                      className="ml-auto"
+                      className="ml-auto text-xs sm:text-sm"
                       onClick={() => {
                         setStudentEditId(student._id);
                         setStudentDraft({
@@ -386,14 +390,15 @@ export function DashboardClient({
                       }}
                       disabled={pending}
                     >
-                      <Pencil className="mr-2 h-4 w-4" /> Edit
+                      <Pencil className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Edit
                     </Button>
                     <Button
                       variant="ghost"
+                      className="text-xs sm:text-sm"
                       onClick={() => runAction(() => deleteStudent(student._id))}
                       disabled={pending}
                     >
-                      Delete student
+                      Delete
                     </Button>
                   </div>
                 </Card>
