@@ -473,30 +473,6 @@ export default function HelpPage() {
               </div>
             </div>
           </section>
-
-          {/* Contact Support */}
-          <section className="space-y-6">
-            <div className="bg-gradient-to-r from-primary/10 to-emerald-500/10 p-6 rounded-2xl border border-border">
-              <h3 className="font-semibold mb-3">Need Additional Help?</h3>
-              <p className="text-sm text-muted mb-4">
-                If you need further assistance or have questions about specific features, don't hesitate to reach out to your system administrator.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link href="/dashboard">
-                  <Button className="text-sm">
-                    <ArrowRight className="mr-2 h-4 w-4" />
-                    Go to Dashboard
-                  </Button>
-                </Link>
-                <Link href="/home">
-                  <Button variant="secondary" className="text-sm">
-                    <Home className="mr-2 h-4 w-4" />
-                    Back to Home
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </section>
         </div>
       </div>
     </main>

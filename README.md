@@ -655,11 +655,6 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 - **Features**: Request features via GitHub Discussions
 - **Contributions**: Welcome pull requests from community
 
-### Contact
-- **Maintainer**: [Your Name](mailto:your.email@example.com)
-- **Repository**: [GitHub Repository](https://github.com/singhnaman320/Academic-Intervention-Tracker)
-- **Documentation**: [Project Wiki](https://github.com/singhnaman320/Academic-Intervention-Tracker/wiki)
-
 ---
 
 ## 🎉 Acknowledgments
