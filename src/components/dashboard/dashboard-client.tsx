@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Download, FileUp, LogOut, Pencil, Shield, Sparkles, Users } from "lucide-react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/contexts/theme-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

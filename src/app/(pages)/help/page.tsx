@@ -1,8 +1,9 @@
 "use client";
 
-import { ShieldCheck, Users, BookOpen, Target, User, Key, Settings, Database, AlertTriangle, TrendingUp, FileText, Upload, Download, Plus, Edit, Trash2, LogOut, Menu, HelpCircle, Moon, Sun, ArrowRight } from "lucide-react";
+import { ShieldCheck, Users, BookOpen, Target, User, Key, Settings, AlertTriangle, TrendingUp, Upload, Download, Plus, Edit, Trash2, LogOut, Menu, HelpCircle, Moon, Sun, ArrowRight, Home, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function HelpPage() {
   return (
@@ -274,49 +275,34 @@ export default function HelpPage() {
             <div className="space-y-4">
               <div className="bg-surface p-6 rounded-2xl border border-border">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  User Management
+                  <Key className="h-5 w-5 text-primary" />
+                  Access Management
                 </h3>
                 <p className="text-sm text-muted mb-4">
-                  Manage user accounts and access permissions for the system.
+                  Manage user accounts and access permissions through the Access panel.
                 </p>
                 <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                  <li>Access "User Management" from dashboard</li>
+                  <li>Navigate to Dashboard → Access</li>
                   <li>View all system users</li>
                   <li>Edit user roles and permissions</li>
-                  <li>Deactivate accounts if needed</li>
-                  <li>Monitor user activity</li>
+                  <li>Manage account status</li>
                 </ol>
               </div>
 
               <div className="bg-surface p-6 rounded-2xl border border-border">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Database className="h-5 w-5 text-primary" />
-                  Data Management
+                  <Download className="h-5 w-5 text-primary" />
+                  Data Export
                 </h3>
                 <p className="text-sm text-muted mb-4">
-                  Import, export, and manage system data efficiently.
+                  Export student data for external analysis and record keeping.
                 </p>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Export Data</h4>
-                    <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                      <li>Student lists (CSV format)</li>
-                      <li>Intervention reports</li>
-                      <li>Performance analytics</li>
-                      <li>Attendance records</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Import Data</h4>
-                    <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                      <li>Batch student registration</li>
-                      <li>Update existing records</li>
-                      <li>Import attendance data</li>
-                      <li>Bulk grade updates</li>
-                    </ul>
-                  </div>
-                </div>
+                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
+                  <li>Go to Student Risk Board</li>
+                  <li>Click "Export CSV" button</li>
+                    <li>Download student list with all details</li>
+                  <li>Use data for reporting or analysis</li>
+                </ol>
               </div>
             </div>
           </section>
@@ -437,7 +423,7 @@ export default function HelpPage() {
           <section className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="rounded-xl bg-primary/10 p-3">
-                <FileText className="h-6 w-6 text-primary" />
+                <BookOpen className="h-6 w-6 text-primary" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold">Quick Reference</h2>
             </div>
@@ -455,7 +441,7 @@ export default function HelpPage() {
                   <Target className="h-4 w-4 text-primary" />
                   Create Intervention
                 </h4>
-                <p className="text-xs text-muted">Select student → Create Intervention → Details → Save</p>
+                <p className="text-xs text-muted">Dashboard → Create Intervention → Details → Save</p>
               </div>
               <div className="bg-surface p-4 rounded-xl border border-border">
                 <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
@@ -480,10 +466,10 @@ export default function HelpPage() {
               </div>
               <div className="bg-surface p-4 rounded-xl border border-border">
                 <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
-                  <LogOut className="h-4 w-4 text-primary" />
-                  Sign Out
+                  <Key className="h-4 w-4 text-primary" />
+                  User Access
                 </h4>
-                <p className="text-xs text-muted">Mobile menu → Sign Out or Dashboard → Sign out</p>
+                <p className="text-xs text-muted">Dashboard → Access → Manage users</p>
               </div>
             </div>
           </section>
@@ -493,17 +479,21 @@ export default function HelpPage() {
             <div className="bg-gradient-to-r from-primary/10 to-emerald-500/10 p-6 rounded-2xl border border-border">
               <h3 className="font-semibold mb-3">Need Additional Help?</h3>
               <p className="text-sm text-muted mb-4">
-                If you need further assistance or have questions about specific features, don't hesitate to reach out to your system administrator or technical support team.
+                If you need further assistance or have questions about specific features, don't hesitate to reach out to your system administrator.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button className="text-sm">
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  Contact Admin
-                </Button>
-                <Button variant="secondary" className="text-sm">
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Documentation
-                </Button>
+                <Link href="/dashboard">
+                  <Button className="text-sm">
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                    Go to Dashboard
+                  </Button>
+                </Link>
+                <Link href="/home">
+                  <Button variant="secondary" className="text-sm">
+                    <Home className="mr-2 h-4 w-4" />
+                    Back to Home
+                  </Button>
+                </Link>
               </div>
             </div>
           </section>

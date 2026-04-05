@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Home, Info, Key, Menu, X, User, LogOut, HelpCircle } from "lucide-react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -18,8 +19,13 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href={user ? "/dashboard" : "/login"} className="flex items-center gap-2 sm:gap-3">
-          <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-stone-950 via-teal-900 to-teal-700 text-white shadow-lg shadow-stone-950/15 dark:shadow-black/30">
-            <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
+          <div className="relative flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl overflow-hidden shadow-lg shadow-stone-950/15 dark:shadow-black/30">
+            <Image 
+              src="/ait-logo.png" 
+              alt="House of Edtech Logo"
+              fill
+              className="object-contain p-1.5 sm:p-2"
+            />
           </div>
           <div className="hidden sm:block">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] text-primary">House of Edtech</p>
