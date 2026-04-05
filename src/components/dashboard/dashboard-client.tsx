@@ -74,8 +74,8 @@ export function DashboardClient({
   users: UserRecord[];
 }) {
   const router = useRouter();
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
   const [pending, startTransition] = useTransition();
   const [studentDraft, setStudentDraft] = useState(defaultStudent);
   const [studentEditId, setStudentEditId] = useState<string | null>(null);
