@@ -97,3 +97,42 @@ textarea {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes scroll-to-top-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.scroll-to-top-glyph {
+  animation: scroll-to-top-float 2.8s ease-in-out infinite;
+}
+
+.scroll-to-top-button:hover {
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 24px 54px rgba(15, 118, 110, 0.3);
+}
+
+.dark .scroll-to-top-button {
+  border-color: rgba(236, 244, 242, 0.32);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .scroll-to-top-glyph {
+    animation: none;
+  }
+
+  .scroll-to-top-button:hover {
+    transform: none;
+  }
+}

@@ -18,7 +18,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-        <Link href={user ? "/dashboard" : "/login"} className="flex items-center gap-2 sm:gap-3">
+        <Link href="/home" className="flex items-center gap-2 sm:gap-3">
           <div className="relative flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl overflow-hidden shadow-lg shadow-stone-950/15 dark:shadow-black/30">
             <Image 
               src="/ait-logo.png" 
