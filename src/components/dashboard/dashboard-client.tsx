@@ -480,6 +480,8 @@ function StaffDashboardClient({
                         <span>{item.title}</span>
                       </span>
                     ))}
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4">
                     <Button
                       variant="ghost"
                       className="text-xs sm:text-sm"
@@ -980,12 +982,13 @@ function MetricCard({
 
 function StatPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-3 py-3 dark:border-border dark:bg-surface">
+    <div className="rounded-2xl border border-border bg-surface px-3 py-2 text-center dark:border-border dark:bg-surface">
       <p className="text-[11px] uppercase tracking-[0.18em] text-muted">{label}</p>
-      <p className="font-semibold text-foreground">{value}</p>
+      <p className="mt-1 font-semibold text-foreground">{value}</p>
     </div>
   );
 }
+
 
 
 

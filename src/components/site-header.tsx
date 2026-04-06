@@ -8,12 +8,25 @@ import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { siteConfig } from "@/lib/site";
 import type { SessionUser } from "@/lib/types";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function SiteHeader({ user }: { user: SessionUser | null }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  async function handleMobileSignOut() {
+    const response = await fetch("/api/auth/logout", { method: "POST" });
+
+    if (!response.ok) {
+      return;
+    }
+
+    setMobileMenuOpen(false);
+    router.push("/login");
+    router.refresh();
+  }
   
   return (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/75 backdrop-blur-xl">
@@ -219,10 +232,7 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
                 <Button
                   variant="ghost"
                   className="w-full justify-start gap-3 px-3 py-2 text-muted hover:text-foreground"
-                  onClick={() => {
-                    // Handle logout
-                    window.location.href = "/api/auth/logout";
-                  }}
+                  onClick={handleMobileSignOut}
                 >
                   <LogOut className="h-4 w-4" />
                   <span className="font-medium">Sign Out</span>
