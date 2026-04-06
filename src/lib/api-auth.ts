@@ -1,6 +1,8 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import type { SessionUser, UserRole } from "@/lib/types";
+
+const SESSION_COOKIE = "ait_session";
 
 export async function requireApiUser() {
   const user = await getSessionUser();
@@ -19,7 +21,9 @@ export function assertRole(user: SessionUser, roles: UserRole[]) {
 }
 
 export function unauthorizedResponse() {
-  return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  const response = NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  response.cookies.delete(SESSION_COOKIE);
+  return response;
 }
 
 export function forbiddenResponse() {

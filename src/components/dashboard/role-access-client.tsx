@@ -72,6 +72,12 @@ export function RoleAccessClient({
       },
     });
 
+    if (response.status === 401) {
+      router.push("/login");
+      router.refresh();
+      throw new Error("Your session has expired.");
+    }
+
     if (!response.ok) {
       const data = await response.json().catch(() => ({ message: "Request failed." }));
       throw new Error(data.message ?? "Request failed.");
@@ -297,5 +303,6 @@ function PermissionCard({ role, summary }: { role: "admin" | "teacher" | "counse
     </div>
   );
 }
+
 
 

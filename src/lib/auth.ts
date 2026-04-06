@@ -58,39 +58,21 @@ export async function getSessionUser() {
     const existingUser = await UserModel.exists({ _id: sessionUser.id });
 
     if (!existingUser) {
-      await clearSessionCookie();
-      // User was removed from database, force logout
-      throw new Error("USER_REMOVED");
+      return null;
     }
 
     return sessionUser;
-  } catch (error) {
-    await clearSessionCookie();
-    // Handle both JWT errors and user removal
-    if (error instanceof Error && error.message === "USER_REMOVED") {
-      // This will be caught by the caller to handle redirect
-      throw error;
-    }
+  } catch {
     return null;
   }
 }
 
 export async function requireSessionUser() {
-  try {
-    const user = await getSessionUser();
+  const user = await getSessionUser();
 
-    if (!user) {
-      redirect("/login");
-    }
-
-    return user;
-  } catch (error) {
-    if (error instanceof Error && error.message === "USER_REMOVED") {
-      // User was removed from database, redirect to login with message
-      redirect("/login?error=user_removed");
-    }
-    
-    // Other errors, redirect to login
+  if (!user) {
     redirect("/login");
   }
+
+  return user;
 }

@@ -144,6 +144,12 @@ export function DashboardClient({
       },
     });
 
+    if (response.status === 401) {
+      router.push("/login");
+      router.refresh();
+      throw new Error("Your session has expired.");
+    }
+
     if (!response.ok) {
       const data = await response.json().catch(() => ({ message: "Request failed." }));
       throw new Error(data.message ?? "Request failed.");
@@ -222,6 +228,12 @@ export function DashboardClient({
 
   async function signOut() {
     const response = await fetch("/api/auth/logout", { method: "POST" });
+
+    if (response.status === 401) {
+      router.push("/login");
+      router.refresh();
+      throw new Error("Your session has expired.");
+    }
 
     if (!response.ok) {
       throw new Error("Unable to sign out.");
@@ -857,6 +869,8 @@ function StatPill({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+
 
 
 
