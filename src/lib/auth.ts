@@ -1,8 +1,10 @@
-import bcrypt from "bcryptjs";
+﻿import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { connectToDatabase } from "@/lib/db";
 import { env } from "@/lib/env";
+import { UserModel } from "@/models/user";
 import type { SessionUser } from "@/lib/types";
 
 const SESSION_COOKIE = "ait_session";
@@ -50,8 +52,19 @@ export async function getSessionUser() {
 
   try {
     const { payload } = await jwtVerify(token, secretKey);
-    return payload as unknown as SessionUser;
+    const sessionUser = payload as unknown as SessionUser;
+
+    await connectToDatabase();
+    const existingUser = await UserModel.exists({ _id: sessionUser.id });
+
+    if (!existingUser) {
+      await clearSessionCookie();
+      return null;
+    }
+
+    return sessionUser;
   } catch {
+    await clearSessionCookie();
     return null;
   }
 }
