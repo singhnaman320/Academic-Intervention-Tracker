@@ -1,10 +1,10 @@
-﻿import type { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const protectedRoutes = ["/dashboard", "/api/students", "/api/interventions", "/api/users", "/api/dashboard"];
 const publicAuthRoutes = ["/login", "/register"];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const token = request.cookies.get("ait_session")?.value;
   const pathname = request.nextUrl.pathname;
 
