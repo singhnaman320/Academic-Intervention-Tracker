@@ -1,4 +1,4 @@
-import { created, handleApiError, ok } from "@/lib/api";
+﻿import { created, handleApiError, ok } from "@/lib/api";
 import {
   forbiddenResponse,
   requireApiUser,
@@ -6,7 +6,7 @@ import {
 } from "@/lib/api-auth";
 import { connectToDatabase } from "@/lib/db";
 import { createActivityLog } from "@/lib/activity-log";
-import { canManageStudents } from "@/lib/permissions";
+import { canCreateStudents } from "@/lib/permissions";
 import { calculateRiskScore, deriveStudentStatus } from "@/lib/risk-score";
 import { studentSchema } from "@/validations/student";
 import { StudentModel } from "@/models/student";
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   try {
     const user = await requireApiUser();
 
-    if (!canManageStudents(user)) {
+    if (!canCreateStudents(user)) {
       return forbiddenResponse();
     }
 

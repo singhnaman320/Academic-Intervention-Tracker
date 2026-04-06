@@ -228,8 +228,8 @@ export function RoleAccessClient({
             </div>
             <div className="mt-5 space-y-3">
               <PermissionCard role="admin" summary="Full administrative control, user management, and data operations." />
-              <PermissionCard role="teacher" summary="Can work with students, interventions, and CSV import workflows." />
-              <PermissionCard role="counselor" summary="Can manage intervention and student support workflows but not user accounts." />
+              <PermissionCard role="teacher" summary="Can manage academic progress, attendance, classroom interventions, and CSV roster imports." />
+              <PermissionCard role="counselor" summary="Can manage behavioral and emotional support plans, plus limited guardian and support-note edits." />
             </div>
           </Card>
         </section>
@@ -303,6 +303,7 @@ function PermissionCard({ role, summary }: { role: "admin" | "teacher" | "counse
     </div>
   );
 }
+
 
 
 

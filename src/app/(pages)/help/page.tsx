@@ -1,476 +1,510 @@
-"use client";
+﻿"use client";
 
-import { ShieldCheck, Users, BookOpen, Target, User, Key, Settings, AlertTriangle, TrendingUp, Upload, Download, Plus, Edit, Trash2, LogOut, Menu, HelpCircle, Moon, Sun, ArrowRight, Home, Info } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  AlertTriangle,
+  BookOpen,
+  Download,
+  Edit,
+  FileUp,
+  HeartHandshake,
+  HelpCircle,
+  Key,
+  Menu,
+  Moon,
+  Plus,
+  Settings,
+  ShieldCheck,
+  Sun,
+  Target,
+  TrendingUp,
+  Upload,
+  User,
+  Users,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+
+function HelpCard({ children }: { children: React.ReactNode }) {
+  return <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">{children}</div>;
+}
 
 export default function HelpPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* Hero Section */}
-      <section className="px-4 py-8 sm:py-12 md:py-16 lg:px-8 bg-gradient-to-br from-primary/5 to-emerald-500/5 dark:from-primary/10 dark:to-emerald-500/10">
-        <div className="mx-auto max-w-4xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 mb-4">
-              <HelpCircle className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-emerald-500 bg-clip-text text-transparent">
-              Help Center
-            </h1>
-            <p className="text-base sm:text-lg text-muted max-w-2xl mx-auto">
-              Complete guide to using the Academic Intervention Tracker effectively
-            </p>
+      <section className="bg-gradient-to-br from-primary/5 to-emerald-500/5 px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-16 dark:from-primary/10 dark:to-emerald-500/10">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 sm:h-20 sm:w-20">
+            <HelpCircle className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
           </div>
+          <h1 className="mb-4 bg-gradient-to-r from-primary to-emerald-500 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl md:text-5xl">
+            Help Center
+          </h1>
+          <p className="mx-auto max-w-2xl text-sm text-muted sm:text-base md:text-lg">
+            Complete guidance for the current teacher, counselor, and admin workflows.
+          </p>
         </div>
       </section>
 
-      <div className="px-4 py-8 sm:py-12 md:py-16 lg:px-8">
-        <div className="mx-auto max-w-4xl space-y-12">
-          
-          {/* Getting Started */}
+      <div className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+        <div className="mx-auto max-w-5xl space-y-12">
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <BookOpen className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Getting Started</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Getting Started</h2>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <div className="flex items-center gap-2 mb-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <HelpCard>
+                <div className="mb-3 flex items-center gap-2">
                   <User className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">First Time Setup</h3>
                 </div>
-                <p className="text-sm text-muted mb-3">
+                <p className="mb-3 text-sm text-muted">
                   Create the first administrator account to initialize the platform.
                 </p>
-                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
+                <ol className="list-inside list-decimal space-y-1 text-xs text-muted">
                   <li>Visit the register page</li>
                   <li>Fill in administrator details</li>
-                  <li>Set up your admin account</li>
-                  <li>Access the dashboard</li>
+                  <li>Create the first admin account</li>
+                  <li>Open the dashboard</li>
                 </ol>
-              </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <div className="flex items-center gap-2 mb-3">
+              <HelpCard>
+                <div className="mb-3 flex items-center gap-2">
                   <Settings className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">Dashboard Overview</h3>
                 </div>
-                <p className="text-sm text-muted mb-3">
-                  Main hub for managing students, interventions, and monitoring progress.
+                <p className="mb-3 text-sm text-muted">
+                  The dashboard changes by role, while admins keep the full system workspace.
                 </p>
-                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                  <li>View student statistics</li>
-                  <li>Monitor risk levels</li>
-                  <li>Track attendance/performance</li>
-                  <li>Manage interventions</li>
+                <ol className="list-inside list-decimal space-y-1 text-xs text-muted">
+                  <li>Teachers see academic and attendance workflows</li>
+                  <li>Counselors see support-focused workflows</li>
+                  <li>Admins can review and manage everything</li>
+                  <li>All roles can monitor active student risk</li>
                 </ol>
-              </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <div className="flex items-center gap-2 mb-3">
+              <HelpCard>
+                <div className="mb-3 flex items-center gap-2">
                   <Users className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">User Roles</h3>
                 </div>
-                <p className="text-sm text-muted mb-3">
-                  Different access levels for various user types in the system.
+                <p className="mb-3 text-sm text-muted">
+                  Roles control which dashboard tools and editing permissions are available.
                 </p>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     <Badge tone="admin" className="text-xs">Admin</Badge>
-                    <span className="text-xs text-muted">Full system access</span>
+                    <span className="text-xs text-muted">Full system access, user management, and all student/intervention editing.</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge tone="medium" className="text-xs">Teacher</Badge>
-                    <span className="text-xs text-muted">Student management</span>
+                  <div className="flex items-start gap-2">
+                    <Badge tone="teacher" className="text-xs">Teacher</Badge>
+                    <span className="text-xs text-muted">Academic progress, attendance, student creation, CSV import/export, and teacher-owned interventions.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Badge tone="counselor" className="text-xs">Counselor</Badge>
+                    <span className="text-xs text-muted">Guardian updates, support notes, counselor-owned support plans, and read-only academic context.</span>
                   </div>
                 </div>
-              </div>
+              </HelpCard>
             </div>
           </section>
 
-          {/* Student Management */}
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <Users className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Student Management</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Student Management</h2>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Plus className="h-5 w-5 text-primary" />
                   Adding Students
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Add new students to the system for monitoring and intervention tracking.
+                <p className="mb-4 text-sm text-muted">
+                  Teachers and admins can add new students for monitoring and intervention planning.
                 </p>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-2">
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Manual Entry</h4>
-                    <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                      <li>Click "Add Student" button</li>
-                      <li>Fill in student information:
-                        <ul className="ml-4 mt-1 space-y-1">
-                          <li>• First & Last Name</li>
-                          <li>• Grade Level</li>
-                          <li>• Guardian Information</li>
-                          <li>• Contact Details</li>
-                        </ul>
-                      </li>
-                      <li>Set initial attendance/performance if known</li>
-                      <li>Add notes about student situation</li>
-                      <li>Click "Create Student"</li>
+                    <h4 className="mb-2 text-sm font-medium">Manual Entry</h4>
+                    <ol className="list-inside list-decimal space-y-1 text-xs text-muted">
+                      <li>Open the student management form</li>
+                      <li>Enter first name, last name, and grade level</li>
+                      <li>Add guardian name and guardian email</li>
+                      <li>Enter attendance and average score if available</li>
+                      <li>Add notes and create the student</li>
                     </ol>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm mb-2">CSV Import</h4>
-                    <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                      <li>Prepare CSV file with columns:
-                        <ul className="ml-4 mt-1 space-y-1">
-                          <li>• firstName, lastName</li>
-                          <li>• gradeLevel</li>
-                          <li>• guardianName, guardianEmail</li>
-                          <li>• attendanceRate (optional)</li>
-                          <li>• averageScore (optional)</li>
-                        </ul>
-                      </li>
-                      <li>Click "Import CSV" button</li>
-                      <li>Select your CSV file</li>
-                      <li>Review and confirm import</li>
+                    <h4 className="mb-2 text-sm font-medium">CSV Import</h4>
+                    <ol className="list-inside list-decimal space-y-1 text-xs text-muted">
+                      <li>Prepare a CSV with the required headers</li>
+                      <li>Upload or paste the CSV in the import section</li>
+                      <li>Review the rows</li>
+                      <li>Run the import</li>
                     </ol>
                   </div>
                 </div>
-              </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Edit className="h-5 w-5 text-primary" />
                   Editing Students
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Update student information as needed throughout the academic year.
+                <p className="mb-4 text-sm text-muted">
+                  Teachers and admins can edit full student records. Counselors can update guardian details and support notes only.
                 </p>
-                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                  <li>Find the student in the risk board</li>
-                  <li>Click the "Edit" button on their card</li>
-                  <li>Modify any required information</li>
-                  <li>Update attendance/performance data</li>
-                  <li>Add or modify notes</li>
-                  <li>Click "Update Student" to save changes</li>
-                </ol>
-              </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-xl bg-surface-strong p-4">
+                    <h4 className="mb-2 text-sm font-medium">Teacher/Admin Edits</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Name</li>
+                      <li>Grade level</li>
+                      <li>Guardian details</li>
+                      <li>Attendance rate</li>
+                      <li>Average score</li>
+                      <li>Notes</li>
+                    </ul>
+                  </div>
+                  <div className="rounded-xl bg-surface-strong p-4">
+                    <h4 className="mb-2 text-sm font-medium">Counselor Edits</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Guardian name</li>
+                      <li>Guardian email</li>
+                      <li>Support notes</li>
+                      <li>Academic fields stay read-only</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-4 overflow-x-auto rounded-xl bg-surface-strong p-4">
+                  <pre className="min-w-[520px] text-xs text-muted"><code>{`firstName,lastName,gradeLevel,guardianName,guardianEmail,attendanceRate,averageScore,notes
+John,Doe,Grade 9,Jane Doe,jane.doe@school.edu,85,78,Needs math tutoring
+Jane,Smith,Grade 11,Bob Smith,bob.smith@school.edu,92,65,Regular attendance`}</code></pre>
+                </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <AlertTriangle className="h-5 w-5 text-primary" />
                   Risk Assessment
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Understanding how student risk levels are calculated and displayed.
+                <p className="mb-4 text-sm text-muted">
+                  Risk scores are calculated from attendance rate and average score. Keep those values current for accurate prioritization.
                 </p>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">Risk Score Calculation</h4>
-                    <p className="text-xs text-muted">
-                      Risk scores are automatically calculated based on attendance rate and average performance scores.
-                    </p>
-                  </div>
-                  <div className="grid gap-2 sm:grid-cols-3">
-                    <div className="flex items-center gap-2">
-                      <Badge tone="low" className="text-xs">Low Risk</Badge>
-                      <span className="text-xs text-muted">Score: 0-29</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge tone="medium" className="text-xs">Medium Risk</Badge>
-                      <span className="text-xs text-muted">Score: 30-59</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge tone="critical" className="text-xs">Critical Risk</Badge>
-                      <span className="text-xs text-muted">Score: 60-100</span>
-                    </div>
-                  </div>
-                  <div className="text-xs text-muted bg-surface-strong p-3 rounded-xl">
-                    <strong>Tip:</strong> Regularly update attendance and performance data for accurate risk assessments.
-                  </div>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <div className="flex items-center gap-2"><Badge tone="low" className="text-xs">Low Risk</Badge><span className="text-xs text-muted">0-29</span></div>
+                  <div className="flex items-center gap-2"><Badge tone="medium" className="text-xs">Medium Risk</Badge><span className="text-xs text-muted">30-59</span></div>
+                  <div className="flex items-center gap-2"><Badge tone="critical" className="text-xs">Critical Risk</Badge><span className="text-xs text-muted">60-100</span></div>
                 </div>
-              </div>
+              </HelpCard>
             </div>
           </section>
 
-          {/* Intervention Management */}
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <Target className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Intervention Management</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Intervention Management</h2>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Plus className="h-5 w-5 text-primary" />
                   Creating Interventions
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Design and implement targeted support strategies for at-risk students.
+                <p className="mb-4 text-sm text-muted">
+                  Teachers create academic interventions. Counselors create support-focused plans. Admins can create either type.
                 </p>
-                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                  <li>Select a student from the risk board</li>
-                  <li>Click "Create Intervention" button</li>
-                  <li>Fill in intervention details:
-                    <ul className="ml-4 mt-1 space-y-1">
-                      <li>• Title (brief description)</li>
-                      <li>• Priority level (Low/Medium/High)</li>
-                      <li>• Description of intervention</li>
-                      <li>• Target student</li>
-                    </ul>
-                  </li>
-                  <li>Click "Create Intervention"</li>
-                  <li>Monitor progress regularly</li>
-                </ol>
-              </div>
-
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  Tracking Progress
-                </h3>
-                <p className="text-sm text-muted mb-4">
-                  Monitor intervention effectiveness and student improvement over time.
-                </p>
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="font-medium text-sm mb-2">What to Track</h4>
-                    <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                      <li>Attendance improvements</li>
-                      <li>Grade/assessment changes</li>
-                      <li>Behavior modifications</li>
-                      <li>Engagement levels</li>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-xl bg-surface-strong p-4">
+                    <h4 className="mb-2 text-sm font-medium">Teacher Categories</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Academic Support</li>
+                      <li>Attendance Recovery</li>
+                      <li>Classroom Intervention</li>
+                      <li>Assessment Prep</li>
+                      <li>Parent Outreach</li>
                     </ul>
                   </div>
-                  <div className="text-xs text-muted bg-surface-strong p-3 rounded-xl">
-                    <strong>Best Practice:</strong> Update student data weekly to track intervention effectiveness and adjust strategies as needed.
+                  <div className="rounded-xl bg-surface-strong p-4">
+                    <h4 className="mb-2 text-sm font-medium">Counselor Categories</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Behavioral Support</li>
+                      <li>Emotional Wellness</li>
+                      <li>Counseling Check-In</li>
+                      <li>Family Outreach</li>
+                      <li>Peer Relationship Support</li>
+                    </ul>
                   </div>
                 </div>
-              </div>
+              </HelpCard>
+
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Editing and Ownership
+                </h3>
+                <p className="mb-4 text-sm text-muted">
+                  Intervention ownership is enforced in the app.
+                </p>
+                <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                  <li>Admins can edit and delete all interventions</li>
+                  <li>Teachers can edit and delete only interventions they created</li>
+                  <li>Counselors can edit and delete only interventions they created</li>
+                  <li>Counselors cannot change academic impact metrics like attendance or performance delta</li>
+                </ul>
+              </HelpCard>
             </div>
           </section>
 
-          {/* Admin Features */}
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <Key className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Admin Features</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Admin Features</h2>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Key className="h-5 w-5 text-primary" />
                   Access Management
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Manage user accounts and access permissions through the Access panel.
+                <p className="mb-4 text-sm text-muted">
+                  Only admins can manage staff accounts and role assignments.
                 </p>
-                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                  <li>Navigate to Dashboard → Access</li>
-                  <li>View all system users</li>
-                  <li>Edit user roles and permissions</li>
-                  <li>Manage account status</li>
+                <ol className="list-inside list-decimal space-y-1 text-xs text-muted">
+                  <li>Open Dashboard → Access</li>
+                  <li>View staff accounts</li>
+                  <li>Create, edit, or delete users</li>
+                  <li>Assign admin, teacher, or counselor roles</li>
                 </ol>
-              </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Download className="h-5 w-5 text-primary" />
-                  Data Export
+                  Full Oversight
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Export student data for external analysis and record keeping.
+                <p className="text-sm text-muted">
+                  Admins keep the full dashboard, including student management, intervention management, activity visibility, exports, and user administration.
                 </p>
-                <ol className="text-xs text-muted space-y-1 list-decimal list-inside">
-                  <li>Go to Student Risk Board</li>
-                  <li>Click "Export CSV" button</li>
-                    <li>Download student list with all details</li>
-                  <li>Use data for reporting or analysis</li>
-                </ol>
-              </div>
+              </HelpCard>
             </div>
           </section>
 
-          {/* Interface Guide */}
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="rounded-xl bg-primary/10 p-3">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold sm:text-3xl">Role-Based Dashboards</h2>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                  <ShieldCheck className="h-5 w-5 text-primary" />
+                  Admin Dashboard
+                </h3>
+                <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                  <li>Full student management</li>
+                  <li>Full intervention management</li>
+                  <li>All intervention ownership override</li>
+                  <li>User access management</li>
+                </ul>
+              </HelpCard>
+
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                  <Target className="h-5 w-5 text-primary" />
+                  Teacher Dashboard
+                </h3>
+                <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                  <li>Create, edit, and delete students</li>
+                  <li>Import and export student CSV data</li>
+                  <li>Manage attendance and average score</li>
+                  <li>Create and manage teacher-owned academic interventions</li>
+                </ul>
+              </HelpCard>
+
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
+                  <HeartHandshake className="h-5 w-5 text-primary" />
+                  Counselor Dashboard
+                </h3>
+                <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                  <li>View academic context</li>
+                  <li>Update guardian details and support notes</li>
+                  <li>Create and manage counselor-owned support plans</li>
+                  <li>Academic metrics remain read-only</li>
+                </ul>
+              </HelpCard>
+            </div>
+          </section>
+
+          <section className="space-y-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <Settings className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Interface Guide</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Interface Guide</h2>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Menu className="h-5 w-5 text-primary" />
                   Navigation Menu
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Desktop Navigation</h4>
-                    <ul className="text-xs text-muted space-y-1">
-                      <li>• Home - Landing page</li>
-                      <li>• About - Platform information</li>
-                      <li>• Help - This guide</li>
-                      <li>• Dashboard - Main workspace</li>
-                      <li>• Access - User management (Admin only)</li>
+                    <h4 className="mb-2 text-sm font-medium">Desktop Navigation</h4>
+                    <ul className="space-y-1 text-xs text-muted">
+                      <li>Home</li>
+                      <li>About</li>
+                      <li>Help</li>
+                      <li>Dashboard</li>
+                      <li>Access for admins only</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Mobile Navigation</h4>
-                    <ul className="text-xs text-muted space-y-1">
-                      <li>• Hamburger menu (☰) for all links</li>
-                      <li>• Theme switcher (🌙/☀️)</li>
-                      <li>• User profile section</li>
-                      <li>• Quick access to dashboard</li>
-                      <li>• Sign out option</li>
+                    <h4 className="mb-2 text-sm font-medium">Mobile Navigation</h4>
+                    <ul className="space-y-1 text-xs text-muted">
+                      <li>Hamburger menu for site links</li>
+                      <li>Theme switcher</li>
+                      <li>Quick dashboard entry</li>
+                      <li>Sign out action</li>
                     </ul>
                   </div>
                 </div>
-              </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <HelpCard>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold">
                   <Moon className="h-5 w-5 text-primary" />
                   Theme Switching
                 </h3>
-                <p className="text-sm text-muted mb-4">
-                  Toggle between light and dark themes for comfortable viewing.
-                </p>
-                <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                  <li>Click the theme switcher icon (🌙/☀️) in the header</li>
-                  <li>Theme preference is automatically saved</li>
-                  <li>Works across all pages of the application</li>
-                  <li>Optimized for both light and dark viewing</li>
+                <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                  <li>Use the theme switcher in the header</li>
+                  <li>The preference is saved automatically</li>
+                  <li>Light and dark themes are supported across the app</li>
                 </ul>
-              </div>
+              </HelpCard>
             </div>
           </section>
 
-          {/* Troubleshooting */}
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <AlertTriangle className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Troubleshooting</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Troubleshooting</h2>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3">Common Issues</h3>
+              <HelpCard>
+                <h3 className="mb-3 font-semibold">Common Issues</h3>
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-medium text-sm text-danger">Can't log in?</h4>
-                    <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                      <li>Check email and password spelling</li>
-                      <li>Ensure account was created successfully</li>
-                      <li>Contact administrator if account is locked</li>
+                    <h4 className="text-sm font-medium text-danger">Can&apos;t log in?</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Check email and password</li>
+                      <li>Make sure the account still exists</li>
+                      <li>Contact an administrator if you need access restored</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm text-danger">CSV import failed?</h4>
-                    <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                      <li>Verify CSV format matches required columns</li>
-                      <li>Check for extra spaces or special characters</li>
-                      <li>Ensure email addresses are valid</li>
-                      <li>Try importing smaller batches</li>
+                    <h4 className="text-sm font-medium text-danger">CSV import failed?</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Confirm the required CSV headers are present</li>
+                      <li>Check email formatting</li>
+                      <li>Review grade level and numeric values</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm text-danger">Risk scores not updating?</h4>
-                    <ul className="text-xs text-muted space-y-1 list-disc list-inside">
-                      <li>Update attendance and performance data</li>
-                      <li>Ensure values are in correct format (0-100)</li>
-                      <li>Refresh the page to see updated scores</li>
+                    <h4 className="text-sm font-medium text-danger">Can&apos;t edit an intervention?</h4>
+                    <ul className="list-inside list-disc space-y-1 text-xs text-muted">
+                      <li>Admins can edit all interventions</li>
+                      <li>Teachers and counselors can edit only their own interventions</li>
                     </ul>
                   </div>
                 </div>
-              </div>
+              </HelpCard>
 
-              <div className="bg-surface p-6 rounded-2xl border border-border">
-                <h3 className="font-semibold mb-3">Best Practices</h3>
-                <ul className="text-xs text-muted space-y-2 list-disc list-inside">
-                  <li>Update student data regularly for accurate risk assessments</li>
-                  <li>Create interventions promptly for high-risk students</li>
-                  <li>Document all intervention activities and outcomes</li>
-                  <li>Use consistent naming conventions for students and interventions</li>
-                  <li>Regular backup important data using export features</li>
-                  <li>Train all staff members on proper data entry procedures</li>
+              <HelpCard>
+                <h3 className="mb-3 font-semibold">Best Practices</h3>
+                <ul className="list-inside list-disc space-y-2 text-xs text-muted">
+                  <li>Update student data regularly for accurate risk scoring</li>
+                  <li>Create interventions promptly for higher-risk students</li>
+                  <li>Keep support notes clear and current</li>
+                  <li>Use role-appropriate workflows for editing</li>
                 </ul>
-              </div>
+              </HelpCard>
             </div>
           </section>
 
-          {/* Quick Reference */}
           <section className="space-y-6">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="mb-6 flex items-center gap-3">
               <div className="rounded-xl bg-primary/10 p-3">
                 <BookOpen className="h-6 w-6 text-primary" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold">Quick Reference</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">Quick Reference</h2>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="bg-surface p-4 rounded-xl border border-border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+              <HelpCard>
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
                   <Plus className="h-4 w-4 text-primary" />
-                  Add Student
+                  Add Student (Teacher)
                 </h4>
-                <p className="text-xs text-muted">Dashboard → Add Student → Fill form → Create</p>
-              </div>
-              <div className="bg-surface p-4 rounded-xl border border-border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                <p className="text-xs text-muted">Dashboard → Student management → Fill form → Create student</p>
+              </HelpCard>
+              <HelpCard>
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
                   <Target className="h-4 w-4 text-primary" />
                   Create Intervention
                 </h4>
-                <p className="text-xs text-muted">Dashboard → Create Intervention → Details → Save</p>
-              </div>
-              <div className="bg-surface p-4 rounded-xl border border-border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                <p className="text-xs text-muted">Dashboard → Intervention planner → Add details → Save</p>
+              </HelpCard>
+              <HelpCard>
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
                   <Upload className="h-4 w-4 text-primary" />
-                  Import CSV
+                  Import CSV (Teacher)
                 </h4>
-                <p className="text-xs text-muted">Dashboard → Import CSV → Select file → Import</p>
-              </div>
-              <div className="bg-surface p-4 rounded-xl border border-border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                <p className="text-xs text-muted">Dashboard → CSV import → Select file or paste data → Import</p>
+              </HelpCard>
+              <HelpCard>
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
                   <Download className="h-4 w-4 text-primary" />
-                  Export Data
+                  Export Data (Teacher/Admin)
                 </h4>
                 <p className="text-xs text-muted">Dashboard → Export CSV → Download file</p>
-              </div>
-              <div className="bg-surface p-4 rounded-xl border border-border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+              </HelpCard>
+              <HelpCard>
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
                   <Edit className="h-4 w-4 text-primary" />
-                  Edit Student
+                  Update Support (Counselor)
                 </h4>
-                <p className="text-xs text-muted">Find student → Edit button → Update → Save</p>
-              </div>
-              <div className="bg-surface p-4 rounded-xl border border-border">
-                <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                <p className="text-xs text-muted">Select student → Update support → Edit guardian details or notes → Save</p>
+              </HelpCard>
+              <HelpCard>
+                <h4 className="mb-2 flex items-center gap-2 text-sm font-medium">
                   <Key className="h-4 w-4 text-primary" />
-                  User Access
+                  User Access (Admin)
                 </h4>
                 <p className="text-xs text-muted">Dashboard → Access → Manage users</p>
-              </div>
+              </HelpCard>
             </div>
           </section>
         </div>

@@ -1,4 +1,4 @@
-export type StudentRecord = {
+﻿export type StudentRecord = {
   _id: string;
   firstName: string;
   lastName: string;
@@ -25,6 +25,7 @@ export type InterventionRecord = {
   nextReviewAt?: string;
   attendanceDelta: number;
   performanceDelta: number;
+  ownerId: string;
   createdAt: string;
   updatedAt: string;
 };

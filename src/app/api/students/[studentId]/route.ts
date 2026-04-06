@@ -1,4 +1,4 @@
-import { handleApiError, noContent, ok } from "@/lib/api";
+﻿import { handleApiError, noContent, ok } from "@/lib/api";
 import {
   forbiddenResponse,
   requireApiUser,
@@ -6,7 +6,11 @@ import {
 } from "@/lib/api-auth";
 import { connectToDatabase } from "@/lib/db";
 import { createActivityLog } from "@/lib/activity-log";
-import { canManageStudents } from "@/lib/permissions";
+import {
+  canDeleteStudents,
+  canEditStudentAcademicFields,
+  canEditStudentSupportFields,
+} from "@/lib/permissions";
 import { calculateRiskScore, deriveStudentStatus } from "@/lib/risk-score";
 import { studentSchema } from "@/validations/student";
 import { StudentModel } from "@/models/student";
@@ -47,28 +51,53 @@ export async function PATCH(
   try {
     const user = await requireApiUser();
 
-    if (!canManageStudents(user)) {
+    if (!canEditStudentSupportFields(user)) {
       return forbiddenResponse();
     }
 
     await connectToDatabase();
     const { studentId } = await context.params;
     const body = studentSchema.parse(await request.json());
+    const existingStudent = await StudentModel.findById(studentId);
 
-    const riskScore = calculateRiskScore({
-      attendanceRate: body.attendanceRate,
-      averageScore: body.averageScore,
+    if (!existingStudent) {
+      throw new Error("Student not found.");
+    }
+
+    const canEditAcademicFields = canEditStudentAcademicFields(user);
+    const nextAttendanceRate = canEditAcademicFields
+      ? body.attendanceRate
+      : existingStudent.attendanceRate;
+    const nextAverageScore = canEditAcademicFields
+      ? body.averageScore
+      : existingStudent.averageScore;
+
+    const updatePayload = {
+      firstName: canEditAcademicFields ? body.firstName : existingStudent.firstName,
+      lastName: canEditAcademicFields ? body.lastName : existingStudent.lastName,
+      gradeLevel: canEditAcademicFields ? body.gradeLevel : existingStudent.gradeLevel,
+      guardianName: body.guardianName,
+      guardianEmail: body.guardianEmail.toLowerCase(),
+      attendanceRate: nextAttendanceRate,
+      averageScore: nextAverageScore,
+      notes: body.notes,
+      riskScore: existingStudent.riskScore,
+      status: existingStudent.status,
+    };
+
+    if (canEditAcademicFields) {
+      const riskScore = calculateRiskScore({
+        attendanceRate: nextAttendanceRate,
+        averageScore: nextAverageScore,
+      });
+
+      updatePayload.riskScore = riskScore;
+      updatePayload.status = deriveStudentStatus(riskScore);
+    }
+
+    const student = await StudentModel.findByIdAndUpdate(studentId, updatePayload, {
+      new: true,
     });
-
-    const student = await StudentModel.findByIdAndUpdate(
-      studentId,
-      {
-        ...body,
-        riskScore,
-        status: deriveStudentStatus(riskScore),
-      },
-      { new: true },
-    );
 
     if (!student) {
       throw new Error("Student not found.");
@@ -79,7 +108,9 @@ export async function PATCH(
       action: "student.updated",
       entityType: "student",
       entityId: student._id.toString(),
-      message: `Updated student profile for ${student.firstName} ${student.lastName}`,
+      message: canEditAcademicFields
+        ? `Updated student profile for ${student.firstName} ${student.lastName}`
+        : `Updated support notes for ${student.firstName} ${student.lastName}`,
     });
 
     return ok({ student });
@@ -99,7 +130,7 @@ export async function DELETE(
   try {
     const user = await requireApiUser();
 
-    if (!canManageStudents(user)) {
+    if (!canDeleteStudents(user)) {
       return forbiddenResponse();
     }
 

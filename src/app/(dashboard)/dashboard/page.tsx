@@ -1,4 +1,4 @@
-import { DashboardClient } from "@/components/dashboard/dashboard-client";
+﻿import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import { requireSessionUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
 import { getDashboardActivity, getDashboardSummary } from "@/lib/dashboard";
@@ -47,6 +47,7 @@ export default async function DashboardPage() {
     nextReviewAt: intervention.nextReviewAt?.toISOString(),
     attendanceDelta: intervention.attendanceDelta,
     performanceDelta: intervention.performanceDelta,
+    ownerId: intervention.ownerId.toString(),
     createdAt: intervention.createdAt.toISOString(),
     updatedAt: intervention.updatedAt.toISOString(),
   }));

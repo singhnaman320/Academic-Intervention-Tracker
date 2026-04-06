@@ -2,8 +2,17 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Download, FileUp, LogOut, Pencil, Shield, Sparkles, Users } from "lucide-react";
-import { useTheme } from "@/contexts/theme-context";
+import {
+  Download,
+  FileUp,
+  HeartHandshake,
+  LogOut,
+  Pencil,
+  Shield,
+  Sparkles,
+  Users,
+} from "lucide-react";
+import { AdminDashboardClient } from "@/components/dashboard/admin-dashboard-client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -44,28 +53,40 @@ type InterventionDraft = {
   performanceDelta: number;
 };
 
+const academicInterventionCategories = [
+  "Academic Support",
+  "Attendance Recovery",
+  "Classroom Intervention",
+  "Assessment Prep",
+  "Parent Outreach",
+];
 
-const defaultIntervention: InterventionDraft = {
-  studentId: "",
-  title: "",
-  category: "Academic Support",
-  description: "",
-  status: "planned",
-  priority: "medium",
-  nextReviewAt: "",
-  attendanceDelta: 0,
-  performanceDelta: 0,
-};
+const counselorInterventionCategories = [
+  "Behavioral Support",
+  "Emotional Wellness",
+  "Counseling Check-In",
+  "Family Outreach",
+  "Peer Relationship Support",
+];
 
+function createDefaultIntervention(role: SessionUser["role"], studentId = ""): InterventionDraft {
+  return {
+    studentId,
+    title: "",
+    category:
+      role === "counselor"
+        ? counselorInterventionCategories[0]
+        : academicInterventionCategories[0],
+    description: "",
+    status: "planned",
+    priority: "medium",
+    nextReviewAt: "",
+    attendanceDelta: 0,
+    performanceDelta: 0,
+  };
+}
 
-export function DashboardClient({
-  currentUser,
-  summary,
-  students,
-  interventions,
-  activity,
-  users,
-}: {
+export function DashboardClient(props: {
   currentUser: SessionUser;
   summary: DashboardSummary;
   students: StudentRecord[];
@@ -73,42 +94,53 @@ export function DashboardClient({
   activity: ActivityRecord[];
   users: UserRecord[];
 }) {
+  const { currentUser } = props;
+
+  if (currentUser.role === "admin") {
+    return <AdminDashboardClient {...props} />;
+  }
+
+  return <StaffDashboardClient {...props} />;
+}
+
+function StaffDashboardClient({
+  currentUser,
+  summary,
+  students,
+  interventions,
+  activity,
+}: {
+  currentUser: SessionUser;
+  summary: DashboardSummary;
+  students: StudentRecord[];
+  interventions: InterventionRecord[];
+  activity: ActivityRecord[];
+}) {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === "dark";
   const [pending, startTransition] = useTransition();
   const [studentDraft, setStudentDraft] = useState(defaultStudent);
   const [studentEditId, setStudentEditId] = useState<string | null>(null);
-  const [interventionDraft, setInterventionDraft] = useState<InterventionDraft>({
-    ...defaultIntervention,
-    studentId: students[0]?._id ?? "",
-  });
+  const [interventionDraft, setInterventionDraft] = useState<InterventionDraft>(
+    createDefaultIntervention(currentUser.role, students[0]?._id ?? ""),
+  );
   const [interventionEditId, setInterventionEditId] = useState<string | null>(null);
   const [csvText, setCsvText] = useState(
     "firstName,lastName,gradeLevel,guardianName,guardianEmail,attendanceRate,averageScore,notes\nAva,Cole,Grade 9,Sara Cole,sara@example.com,68,51,Needs mentoring",
   );
-  const [toasts, setToasts] = useState<Array<{ id: string; message: string; variant: "success" | "error" }>>([]);
+  const [toasts, setToasts] = useState<
+    Array<{ id: string; message: string; variant: "success" | "error" }>
+  >([]);
   const toastIdRef = useRef(0);
 
-  const addToast = (msg: string, variant: "success" | "error") => {
-    toastIdRef.current += 1;
-    const id = `toast-${toastIdRef.current}`;
-    setToasts((prev) => [...prev, { id, message: msg, variant }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      setCsvText(text);
-    };
-    reader.readAsText(file);
-  };
+  const isTeacher = currentUser.role === "teacher";
+  const isCounselor = currentUser.role === "counselor";
+  const canCreateStudents = isTeacher;
+  const canDeleteStudents = isTeacher;
+  const canImportStudents = isTeacher;
+  const canEditAcademicFields = isTeacher;
+  const interventionCategories = isCounselor
+    ? counselorInterventionCategories
+    : academicInterventionCategories;
 
   const studentsWithInterventions = useMemo(
     () =>
@@ -119,18 +151,64 @@ export function DashboardClient({
     [interventions, students],
   );
 
+  const recentActivity = useMemo(() => activity.slice(0, 8), [activity]);
+  const canManageIntervention = (ownerId: string) => ownerId === currentUser.id;
+
+  function addToast(message: string, variant: "success" | "error") {
+    toastIdRef.current += 1;
+    const id = `toast-${toastIdRef.current}`;
+    setToasts((prev) => [...prev, { id, message, variant }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    }, 4000);
+  }
+
+  function resetStudentForm() {
+    setStudentEditId(null);
+    setStudentDraft(defaultStudent);
+  }
+
+  function resetInterventionForm() {
+    setInterventionEditId(null);
+    setInterventionDraft(createDefaultIntervention(currentUser.role, students[0]?._id ?? ""));
+  }
+
+  function startStudentEdit(student: StudentRecord) {
+    setStudentEditId(student._id);
+    setStudentDraft({
+      firstName: student.firstName,
+      lastName: student.lastName,
+      gradeLevel: student.gradeLevel,
+      guardianName: student.guardianName,
+      guardianEmail: student.guardianEmail,
+      attendanceRate: student.attendanceRate,
+      averageScore: student.averageScore,
+      notes: student.notes,
+    });
+  }
+
+  function startInterventionEdit(intervention: InterventionRecord) {
+    setInterventionEditId(intervention._id);
+    setInterventionDraft({
+      studentId: intervention.studentId,
+      title: intervention.title,
+      category: intervention.category,
+      description: intervention.description,
+      status: intervention.status,
+      priority: intervention.priority,
+      nextReviewAt: intervention.nextReviewAt ?? "",
+      attendanceDelta: intervention.attendanceDelta,
+      performanceDelta: intervention.performanceDelta,
+    });
+  }
+
   function runAction(task: () => Promise<void>) {
     startTransition(async () => {
-
       try {
         await task();
         router.refresh();
-      } catch (taskError) {
-        if (taskError instanceof Error) {
-          addToast(taskError.message, "error");
-        } else {
-          addToast("Something went wrong.", "error");
-        }
+      } catch (error) {
+        addToast(error instanceof Error ? error.message : "Something went wrong.", "error");
       }
     });
   }
@@ -164,7 +242,7 @@ export function DashboardClient({
       body: JSON.stringify(studentDraft),
     });
 
-    setStudentDraft(defaultStudent);
+    resetStudentForm();
     addToast("Student created successfully.", "success");
   }
 
@@ -174,9 +252,11 @@ export function DashboardClient({
       body: JSON.stringify(studentDraft),
     });
 
-    setStudentEditId(null);
-    setStudentDraft(defaultStudent);
-    addToast("Student updated successfully.", "success");
+    resetStudentForm();
+    addToast(
+      isCounselor ? "Support details updated successfully." : "Student updated successfully.",
+      "success",
+    );
   }
 
   async function deleteStudent(studentId: string) {
@@ -190,11 +270,11 @@ export function DashboardClient({
       body: JSON.stringify(interventionDraft),
     });
 
-    setInterventionDraft({
-      ...defaultIntervention,
-      studentId: students[0]?._id ?? "",
-    });
-    addToast("Intervention created successfully.", "success");
+    resetInterventionForm();
+    addToast(
+      isCounselor ? "Support plan created successfully." : "Intervention created successfully.",
+      "success",
+    );
   }
 
   async function updateIntervention(interventionId: string) {
@@ -203,19 +283,17 @@ export function DashboardClient({
       body: JSON.stringify(interventionDraft),
     });
 
-    setInterventionEditId(null);
-    setInterventionDraft({
-      ...defaultIntervention,
-      studentId: students[0]?._id ?? "",
-    });
-    addToast("Intervention updated successfully.", "success");
+    resetInterventionForm();
+    addToast(
+      isCounselor ? "Support plan updated successfully." : "Intervention updated successfully.",
+      "success",
+    );
   }
 
   async function deleteIntervention(interventionId: string) {
     await apiRequest(`/api/interventions/${interventionId}`, { method: "DELETE" });
-    addToast("Intervention removed.", "success");
+    addToast(isCounselor ? "Support plan removed." : "Intervention removed.", "success");
   }
-
 
   async function importCsv() {
     await apiRequest("/api/students/import", {
@@ -243,21 +321,37 @@ export function DashboardClient({
     router.refresh();
   }
 
+  const heroEyebrow = isTeacher ? "Teacher Dashboard" : "Counselor Dashboard";
+  const heroTitle = isTeacher
+    ? "Track academics, attendance, and classroom interventions."
+    : "Coordinate student support, well-being, and follow-through.";
+  const heroCopy = isTeacher
+    ? "Teachers can manage student records, monitor attendance and performance, import rosters, and plan classroom-focused interventions."
+    : "Counselors can update guardian and support notes, review risk signals, and run behavioral or emotional support plans without changing core academic records.";
+
+  const studentFormTitle = isTeacher ? "Student management" : "Support update";
+  const studentFormCopy = isTeacher
+    ? "Create students or update academic and guardian details from one place."
+    : "Counselors can update guardian contacts and support notes after selecting a student from the roster.";
+
+  const interventionTitle = isTeacher ? "Academic intervention planner" : "Counseling support planner";
+  const interventionCopy = isTeacher
+    ? "Build classroom and attendance interventions with academic impact tracking."
+    : "Plan behavioral, emotional, and outreach support with counseling-focused categories.";
+
   return (
     <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:gap-6 lg:gap-8">
-        <Card className="overflow-hidden bg-gradient-to-r from-stone-950 via-teal-900 to-teal-700 p-4 sm:p-6 lg:p-8 text-white dark:from-stone-800 dark:via-teal-800 dark:to-teal-600">
-          <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl space-y-3 sm:space-y-4">
-              <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.35em] text-teal-100">
-                Intervention Intelligence Hub
+        <Card className="overflow-hidden bg-gradient-to-r from-stone-950 via-teal-900 to-teal-700 p-4 text-white sm:p-6 lg:p-8 dark:from-stone-800 dark:via-teal-800 dark:to-teal-600">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-teal-100 sm:text-sm">
+                {heroEyebrow}
               </p>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold leading-tight">
-                Support students before risk turns into attrition.
+              <h1 className="text-2xl font-semibold leading-tight sm:text-3xl lg:text-4xl xl:text-5xl">
+                {heroTitle}
               </h1>
-              <p className="max-w-2xl text-xs sm:text-sm text-teal-50/90">
-                Centralize intervention workflows, role-based coordination, and attendance-performance risk tracking in one responsive Next.js workspace.
-              </p>
+              <p className="max-w-2xl text-xs text-teal-50/90 sm:text-sm">{heroCopy}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Badge tone={currentUser.role}>{currentUser.role}</Badge>
@@ -267,75 +361,77 @@ export function DashboardClient({
                 disabled={pending}
                 className="text-xs sm:text-sm"
               >
-                <LogOut className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Sign out
+                <LogOut className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" /> Sign out
               </Button>
             </div>
           </div>
         </Card>
 
-        <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
             label="Total students"
             value={String(summary.totalStudents)}
             helper="Profiles under active monitoring"
-            icon={<Users className="h-4 w-4 sm:h-5 sm:w-5" />}
+            icon={<Users className="h-5 w-5" />}
           />
           <MetricCard
             label="Urgent risk"
             value={String(summary.urgentStudents)}
-            helper="High-priority learners requiring attention"
-            icon={<Shield className="h-4 w-4 sm:h-5 sm:w-5" />}
+            helper="Students needing immediate follow-up"
+            icon={<Shield className="h-5 w-5" />}
           />
           <MetricCard
-            label="Avg attendance"
-            value={formatPercent(summary.averageAttendance)}
-            helper="Current cohort attendance trend"
-            icon={<Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />}
+            label={isTeacher ? "Avg attendance" : "Active support plans"}
+            value={isTeacher ? formatPercent(summary.averageAttendance) : String(summary.activeInterventions)}
+            helper={isTeacher ? "Attendance trend across the roster" : "Interventions currently in progress"}
+            icon={<Sparkles className="h-5 w-5" />}
           />
           <MetricCard
-            label="Avg performance"
+            label={isTeacher ? "Avg performance" : "Avg performance context"}
             value={formatPercent(summary.averagePerformance)}
-            helper="Average assessment outcomes"
-            icon={<Shield className="h-4 w-4 sm:h-5 sm:w-5" />}
+            helper={isTeacher ? "Assessment trend across students" : "Academic context visible to support planning"}
+            icon={<HeartHandshake className="h-5 w-5" />}
           />
         </section>
 
-        <div className="fixed top-4 right-4 z-50 space-y-2">
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            variant={toast.variant}
-          />
-        ))}
-      </div>
+        <div className="fixed right-4 top-4 z-50 space-y-2">
+          {toasts.map((toast) => (
+            <Toast key={toast.id} message={toast.message} variant={toast.variant} />
+          ))}
+        </div>
 
-        <section className="grid gap-4 grid-cols-1 lg:grid-cols-[1.15fr_0.85fr]">
+        <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <Card className="p-4 sm:p-6">
-            <div className="mb-4 sm:mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-xl sm:text-2xl font-semibold">Student risk board</h2>
-                <p className="text-xs sm:text-sm text-muted">
-                  Students are automatically scored using attendance and performance signals.
+                <h2 className="text-xl font-semibold sm:text-2xl">
+                  {isTeacher ? "Academic roster" : "Student support roster"}
+                </h2>
+                <p className="text-xs text-muted sm:text-sm">
+                  {isTeacher
+                    ? "Review attendance, grades, guardian details, and linked classroom interventions."
+                    : "Review student context, guardian details, and linked support plans before updating notes."}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  window.location.href = "/api/students/export";
-                }}
-                className="inline-flex items-center gap-2 rounded-2xl border border-border bg-surface-strong px-3 py-2 text-xs sm:px-4 sm:py-2 sm:text-sm font-semibold hover:bg-surface transition dark:bg-surface-strong dark:hover:bg-surface"
-              >
-                <Download className="h-3 w-3 sm:h-4 sm:w-4" /> Export CSV
-              </button>
+              {isTeacher ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.location.href = "/api/students/export";
+                  }}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-surface-strong px-3 py-2 text-xs font-semibold transition hover:bg-surface sm:px-4 sm:text-sm dark:bg-surface-strong dark:hover:bg-surface"
+                >
+                  <Download className="h-4 w-4" /> Export CSV
+                </button>
+              ) : null}
             </div>
-            <div className="space-y-3 sm:space-y-4 max-h-[48rem] overflow-y-auto scrollbar-hide cursor-grab active:cursor-grabbing">
+            <div className="max-h-[46rem] space-y-3 overflow-y-auto scrollbar-hide">
               {studentsWithInterventions.map((student) => (
-                <Card key={student._id} className="border bg-surface-strong p-3 sm:p-5 shadow-none dark:bg-surface-strong dark:border-border">
-                  <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
-                    <div className="space-y-2 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                        <h3 className="text-sm sm:text-lg font-semibold break-words">
+                <Card key={student._id} className="border bg-surface-strong p-4 shadow-none dark:border-border dark:bg-surface-strong">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-base font-semibold sm:text-lg">
                           {student.firstName} {student.lastName}
                         </h3>
                         <Badge tone={student.status} className="text-xs">
@@ -354,64 +450,55 @@ export function DashboardClient({
                           Risk {student.riskScore}
                         </Badge>
                       </div>
-                      <div className="text-xs sm:text-sm text-muted break-words space-y-1">
-                        <p>{student.gradeLevel} | Grade Level</p>
+                      <div className="space-y-1 text-xs text-muted sm:text-sm">
+                        <p>{student.gradeLevel} | Grade level</p>
                         <p>Guardian: {student.guardianName}</p>
                         <p>{student.guardianEmail}</p>
                       </div>
-                      <p className="text-xs sm:text-sm text-foreground break-words">
+                      <p className="text-sm text-foreground">
                         {student.notes || "No notes yet."}
                       </p>
                     </div>
-                    <div className="grid grid-cols-1 gap-2 text-xs sm:text-sm sm:grid-cols-3 sm:gap-3 lg:min-w-[240px]">
+                    <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-3 sm:text-sm lg:min-w-[240px]">
                       <StatPill label="Attendance" value={formatPercent(student.attendanceRate)} />
                       <StatPill label="Score" value={formatPercent(student.averageScore)} />
                       <StatPill label="Updated" value={formatDate(student.updatedAt)} />
                     </div>
                   </div>
-                  <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2">
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
                     {student.interventions.length === 0 ? (
-                      <span className="text-xs sm:text-sm text-muted">No interventions yet.</span>
+                      <span className="text-xs text-muted sm:text-sm">No plans linked yet.</span>
                     ) : null}
                     {student.interventions.map((item) => (
-                      <button
+                      <span
                         key={item._id}
-                        type="button"
-                        onClick={() => runAction(() => deleteIntervention(item._id))}
-                        className="inline-flex items-center gap-1 sm:gap-2 rounded-full border border-border bg-surface px-2 py-1 text-xs font-medium dark:bg-surface dark:border-border"
+                        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-2 py-1 text-xs font-medium dark:border-border dark:bg-surface"
                       >
-                        <Badge tone={item.priority} className="text-xs">{item.priority}</Badge>
-                        <span className="truncate max-w-[100px] sm:max-w-none">{item.title}</span>
-                      </button>
+                        <Badge tone={item.priority} className="text-xs">
+                          {item.priority}
+                        </Badge>
+                        <span>{item.title}</span>
+                      </span>
                     ))}
                     <Button
                       variant="ghost"
-                      className="ml-auto text-xs sm:text-sm"
-                      onClick={() => {
-                        setStudentEditId(student._id);
-                        setStudentDraft({
-                          firstName: student.firstName,
-                          lastName: student.lastName,
-                          gradeLevel: student.gradeLevel,
-                          guardianName: student.guardianName,
-                          guardianEmail: student.guardianEmail,
-                          attendanceRate: student.attendanceRate,
-                          averageScore: student.averageScore,
-                          notes: student.notes,
-                        });
-                      }}
-                      disabled={pending}
-                    >
-                      <Pencil className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" /> Edit
-                    </Button>
-                    <Button
-                      variant="ghost"
                       className="text-xs sm:text-sm"
-                      onClick={() => runAction(() => deleteStudent(student._id))}
+                      onClick={() => startStudentEdit(student)}
                       disabled={pending}
                     >
-                      Delete
+                      <Pencil className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
+                      {isTeacher ? "Edit record" : "Update support"}
                     </Button>
+                    {canDeleteStudents ? (
+                      <Button
+                        variant="ghost"
+                        className="text-xs sm:text-sm"
+                        onClick={() => runAction(() => deleteStudent(student._id))}
+                        disabled={pending}
+                      >
+                        Delete
+                      </Button>
+                    ) : null}
                   </div>
                 </Card>
               ))}
@@ -423,16 +510,20 @@ export function DashboardClient({
               <div className="mb-4 flex items-center gap-3">
                 <Sparkles className="h-5 w-5 text-primary" />
                 <div>
-                  <h2 className="text-xl font-semibold">Create student</h2>
-                  <p className="text-sm text-muted">
-                    Add a learner and compute baseline risk instantly.
-                  </p>
+                  <h2 className="text-xl font-semibold">{studentFormTitle}</h2>
+                  <p className="text-sm text-muted">{studentFormCopy}</p>
                 </div>
               </div>
+              {!canCreateStudents && !studentEditId ? (
+                <div className="rounded-2xl border border-border bg-surface p-4 text-sm text-muted">
+                  Select a student from the roster to update guardian contact details and support notes.
+                </div>
+              ) : null}
               <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   placeholder="First name"
                   value={studentDraft.firstName}
+                  disabled={!canEditAcademicFields}
                   onChange={(event) =>
                     setStudentDraft((current) => ({
                       ...current,
@@ -443,6 +534,7 @@ export function DashboardClient({
                 <Input
                   placeholder="Last name"
                   value={studentDraft.lastName}
+                  disabled={!canEditAcademicFields}
                   onChange={(event) =>
                     setStudentDraft((current) => ({
                       ...current,
@@ -453,6 +545,7 @@ export function DashboardClient({
                 <Input
                   placeholder="Grade level"
                   value={studentDraft.gradeLevel}
+                  disabled={!canEditAcademicFields}
                   onChange={(event) =>
                     setStudentDraft((current) => ({
                       ...current,
@@ -485,6 +578,7 @@ export function DashboardClient({
                   <label className="text-xs text-muted">Attendance rate (0-100)</label>
                   <Input
                     value={studentDraft.attendanceRate}
+                    disabled={!canEditAcademicFields}
                     onChange={(event) =>
                       setStudentDraft((current) => ({
                         ...current,
@@ -497,6 +591,7 @@ export function DashboardClient({
                   <label className="text-xs text-muted">Average score (0-100)</label>
                   <Input
                     value={studentDraft.averageScore}
+                    disabled={!canEditAcademicFields}
                     onChange={(event) =>
                       setStudentDraft((current) => ({
                         ...current,
@@ -508,7 +603,7 @@ export function DashboardClient({
               </div>
               <Textarea
                 className="mt-3"
-                placeholder="Context for support plan"
+                placeholder={isTeacher ? "Context for support plan" : "Support notes, observed concerns, or follow-up context"}
                 value={studentDraft.notes}
                 onChange={(event) =>
                   setStudentDraft((current) => ({
@@ -517,6 +612,11 @@ export function DashboardClient({
                   }))
                 }
               />
+              {isCounselor ? (
+                <p className="mt-3 text-xs text-muted">
+                  Counselor edits are limited to guardian details and support notes. Academic fields stay read-only.
+                </p>
+              ) : null}
               <Button
                 className="mt-4 w-full"
                 onClick={() =>
@@ -524,18 +624,19 @@ export function DashboardClient({
                     studentEditId ? updateStudent(studentEditId) : createStudent(),
                   )
                 }
-                disabled={pending}
+                disabled={pending || (!canCreateStudents && !studentEditId)}
               >
-                {studentEditId ? "Update student" : "Create student"}
+                {studentEditId
+                  ? isCounselor
+                    ? "Save support update"
+                    : "Update student"
+                  : "Create student"}
               </Button>
               {studentEditId ? (
                 <Button
                   variant="secondary"
                   className="mt-2 w-full"
-                  onClick={() => {
-                    setStudentEditId(null);
-                    setStudentDraft(defaultStudent);
-                  }}
+                  onClick={resetStudentForm}
                   disabled={pending}
                 >
                   Cancel edit
@@ -543,53 +644,65 @@ export function DashboardClient({
               ) : null}
             </Card>
 
-            <Card className="p-6">
-              <div className="mb-4 flex items-center gap-3">
-                <FileUp className="h-5 w-5 text-primary" />
-                <div>
-                  <h2 className="text-xl font-semibold">CSV import</h2>
-                  <p className="text-sm text-muted">
-                    Paste CSV rows with required headers to bulk-load students.
-                  </p>
+            {canImportStudents ? (
+              <Card className="p-6">
+                <div className="mb-4 flex items-center gap-3">
+                  <FileUp className="h-5 w-5 text-primary" />
+                  <div>
+                    <h2 className="text-xl font-semibold">CSV import</h2>
+                    <p className="text-sm text-muted">
+                      Paste CSV rows with required headers to bulk-load students.
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="mb-3">
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Upload CSV file
-                </label>
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                  className="block w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-2xl file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-strong"
-                />
-              </div>
-              <div className="overflow-x-auto scrollbar-hide">
-                <Textarea
-                  value={csvText}
-                  onChange={(event) => setCsvText(event.target.value)}
-                  className="w-[200%] whitespace-nowrap text-xs"
-                  style={{ fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace' }}
-                  rows={4}
-                />
-              </div>
-              <Button
-                onClick={() => runAction(importCsv)}
-                disabled={pending}
-                className="mt-4 w-full"
-              >
-                Import students
-              </Button>
-            </Card>
+                <div className="mb-3">
+                  <label className="mb-1 block text-sm font-medium text-foreground">
+                    Upload CSV file
+                  </label>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (loadEvent) => {
+                        const text = loadEvent.target?.result as string;
+                        setCsvText(text);
+                      };
+                      reader.readAsText(file);
+                    }}
+                    className="block w-full text-sm text-foreground file:mr-4 file:rounded-2xl file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-strong"
+                  />
+                </div>
+                <div className="overflow-x-auto scrollbar-hide">
+                  <Textarea
+                    value={csvText}
+                    onChange={(event) => setCsvText(event.target.value)}
+                    className="w-[200%] whitespace-nowrap text-xs"
+                    style={{
+                      fontFamily:
+                        'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                    }}
+                    rows={4}
+                  />
+                </div>
+                <Button
+                  onClick={() => runAction(importCsv)}
+                  disabled={pending}
+                  className="mt-4 w-full"
+                >
+                  Import students
+                </Button>
+              </Card>
+            ) : null}
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <Card className="p-6">
-            <h2 className="text-2xl font-semibold">Intervention planner</h2>
-            <p className="mt-1 text-sm text-muted">
-              Map each action plan to a learner, priority, and review date.
-            </p>
+            <h2 className="text-2xl font-semibold">{interventionTitle}</h2>
+            <p className="mt-1 text-sm text-muted">{interventionCopy}</p>
             <div className="mt-4 grid gap-3">
               <Select
                 value={interventionDraft.studentId}
@@ -611,7 +724,7 @@ export function DashboardClient({
                 ))}
               </Select>
               <Input
-                placeholder="Intervention title"
+                placeholder={isTeacher ? "Intervention title" : "Support plan title"}
                 value={interventionDraft.title}
                 onChange={(event) =>
                   setInterventionDraft((current) => ({
@@ -620,8 +733,7 @@ export function DashboardClient({
                   }))
                 }
               />
-              <Input
-                placeholder="Category"
+              <Select
                 value={interventionDraft.category}
                 onChange={(event) =>
                   setInterventionDraft((current) => ({
@@ -629,9 +741,15 @@ export function DashboardClient({
                     category: event.target.value,
                   }))
                 }
-              />
+              >
+                {interventionCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </Select>
               <Textarea
-                placeholder="Describe the support plan"
+                placeholder={isTeacher ? "Describe the support plan" : "Describe the counseling plan, triggers, supports, and next follow-up"}
                 value={interventionDraft.description}
                 onChange={(event) =>
                   setInterventionDraft((current) => ({
@@ -669,9 +787,7 @@ export function DashboardClient({
                   <option value="critical">Critical priority</option>
                 </Select>
                 <div>
-                  <label className="text-xs text-slate-500 dark:text-muted">
-                    Review date
-                  </label>
+                  <label className="text-xs text-muted">Review date</label>
                   <DatePicker
                     value={interventionDraft.nextReviewAt}
                     onChange={(value) =>
@@ -683,30 +799,38 @@ export function DashboardClient({
                     placeholder="Select review date"
                   />
                 </div>
-                <div>
-                  <label className="text-xs text-muted">Attendance change</label>
-                  <Input
-                    value={interventionDraft.attendanceDelta}
-                    onChange={(event) =>
-                      setInterventionDraft((current) => ({
-                        ...current,
-                        attendanceDelta: Number(event.target.value) || 0,
-                      }))
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted">Performance change</label>
-                  <Input
-                    value={interventionDraft.performanceDelta}
-                    onChange={(event) =>
-                      setInterventionDraft((current) => ({
-                        ...current,
-                        performanceDelta: Number(event.target.value) || 0,
-                      }))
-                    }
-                  />
-                </div>
+                {isTeacher ? (
+                  <>
+                    <div>
+                      <label className="text-xs text-muted">Attendance change</label>
+                      <Input
+                        value={interventionDraft.attendanceDelta}
+                        onChange={(event) =>
+                          setInterventionDraft((current) => ({
+                            ...current,
+                            attendanceDelta: Number(event.target.value) || 0,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted">Performance change</label>
+                      <Input
+                        value={interventionDraft.performanceDelta}
+                        onChange={(event) =>
+                          setInterventionDraft((current) => ({
+                            ...current,
+                            performanceDelta: Number(event.target.value) || 0,
+                          }))
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-2xl border border-border bg-surface p-3 text-xs text-muted sm:col-span-2">
+                    Counselors can track status, priority, category, and review dates. Academic impact metrics stay protected for teacher and admin workflows.
+                  </div>
+                )}
               </div>
               <Button
                 onClick={() =>
@@ -718,118 +842,109 @@ export function DashboardClient({
                 }
                 disabled={pending}
               >
-                {interventionEditId ? "Update intervention" : "Create intervention"}
+                {interventionEditId
+                  ? isCounselor
+                    ? "Update support plan"
+                    : "Update intervention"
+                  : isCounselor
+                    ? "Create support plan"
+                    : "Create intervention"}
               </Button>
               {interventionEditId ? (
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setInterventionEditId(null);
-                    setInterventionDraft({
-                      ...defaultIntervention,
-                      studentId: students[0]?._id ?? "",
-                    });
-                  }}
-                  disabled={pending}
-                >
+                <Button variant="secondary" onClick={resetInterventionForm} disabled={pending}>
                   Cancel edit
                 </Button>
               ) : null}
             </div>
           </Card>
 
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold">Recent interventions</h2>
-            <div className="mt-4 space-y-3 max-h-[30rem] overflow-y-auto scrollbar-hide cursor-grab active:cursor-grabbing">
-              {interventions.length === 0 ? (
-                <p className="text-sm text-muted">No interventions logged yet.</p>
-              ) : null}
-              {interventions.map((intervention) => {
-                const student = students.find((item) => item._id === intervention.studentId);
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-2xl font-semibold">
+                {isTeacher ? "Recent classroom interventions" : "Recent support plans"}
+              </h2>
+              <div className="mt-4 max-h-[28rem] space-y-3 overflow-y-auto scrollbar-hide">
+                {interventions.length === 0 ? (
+                  <p className="text-sm text-muted">No plans logged yet.</p>
+                ) : null}
+                {interventions.map((intervention) => {
+                  const student = students.find((item) => item._id === intervention.studentId);
 
-                return (
-                  <div
-                    key={intervention._id}
-                    className="rounded-2xl border border-border bg-surface-strong p-4 dark:bg-surface-strong dark:border-border"
-                  >
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-semibold">{intervention.title}</h3>
-                      <Badge tone={intervention.status}>{intervention.status}</Badge>
-                      <Badge tone={intervention.priority}>{intervention.priority}</Badge>
-                    </div>
-                    <p className="mt-2 text-sm text-muted">
-                      {student
-                        ? `${student.firstName} ${student.lastName}`
-                        : "Unknown student"}{" "}
-                      | {intervention.category}
-                    </p>
-                    <p className="mt-2 text-sm text-foreground">{intervention.description}</p>
-                    <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted">
-                      <span>
-                        Review: {intervention.nextReviewAt ? formatDate(intervention.nextReviewAt) : "Not scheduled"}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            setInterventionEditId(intervention._id);
-                            setInterventionDraft({
-                              studentId: intervention.studentId,
-                              title: intervention.title,
-                              category: intervention.category,
-                              description: intervention.description,
-                              status: intervention.status,
-                              priority: intervention.priority,
-                              nextReviewAt: intervention.nextReviewAt ?? "",
-                              attendanceDelta: intervention.attendanceDelta,
-                              performanceDelta: intervention.performanceDelta,
-                            });
-                          }}
-                          disabled={pending}
-                        >
-                          <Pencil className="mr-2 h-4 w-4" /> Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          onClick={() => runAction(() => deleteIntervention(intervention._id))}
-                          disabled={pending}
-                        >
-                          Delete
-                        </Button>
+                  return (
+                    <div
+                      key={intervention._id}
+                      className="rounded-2xl border border-border bg-surface-strong p-4 dark:border-border dark:bg-surface-strong"
+                    >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="font-semibold">{intervention.title}</h3>
+                        <Badge tone={intervention.status}>{intervention.status}</Badge>
+                        <Badge tone={intervention.priority}>{intervention.priority}</Badge>
+                      </div>
+                      <p className="mt-2 text-sm text-muted">
+                        {student
+                          ? `${student.firstName} ${student.lastName}`
+                          : "Unknown student"}{" "}
+                        | {intervention.category}
+                      </p>
+                      <p className="mt-2 text-sm text-foreground">{intervention.description}</p>
+                      <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted">
+                        <span>
+                          Review: {intervention.nextReviewAt ? formatDate(intervention.nextReviewAt) : "Not scheduled"}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {canManageIntervention(intervention.ownerId) ? (
+                            <>
+                              <Button
+                                variant="ghost"
+                                onClick={() => startInterventionEdit(intervention)}
+                                disabled={pending}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" /> Edit
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                onClick={() => runAction(() => deleteIntervention(intervention._id))}
+                                disabled={pending}
+                              >
+                                Delete
+                              </Button>
+                            </>
+                          ) : (
+                            <span className="text-xs text-muted">Only the creator or admin can edit</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-        </section>
+                  );
+                })}
+              </div>
+            </Card>
 
-        <section className="grid gap-4">
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold">Activity log</h2>
-            <p className="mt-1 text-sm text-muted">
-              A simple audit trail for operational visibility.
-            </p>
-            <div className="mt-4 space-y-3 max-h-[30rem] overflow-y-auto scrollbar-hide cursor-grab active:cursor-grabbing">
-              {activity.map((entry) => (
-                <div key={entry._id} className="rounded-2xl border border-border bg-surface-strong p-4 dark:bg-surface-strong dark:border-border">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold">{entry.actorName}</span>
-                      <Badge tone={entry.actorRole as "admin" | "teacher" | "counselor"}>
-                        {entry.actorRole}
-                      </Badge>
+            <Card className="p-6">
+              <h2 className="text-2xl font-semibold">Recent activity</h2>
+              <p className="mt-1 text-sm text-muted">
+                {isTeacher
+                  ? "Recent operational changes across the academic workflow."
+                  : "Recent operational changes across the support workflow."}
+              </p>
+              <div className="mt-4 space-y-3">
+                {recentActivity.map((entry) => (
+                  <div key={entry._id} className="rounded-2xl border border-border bg-surface-strong p-4 dark:border-border dark:bg-surface-strong">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold">{entry.actorName}</span>
+                        <Badge tone={entry.actorRole as "admin" | "teacher" | "counselor"}>
+                          {entry.actorRole}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted">{formatDate(entry.createdAt)}</p>
                     </div>
-                    <p className="text-xs text-muted">
-                      {formatDate(entry.createdAt)} | {entry.action}
-                    </p>
+                    <p className="mt-2 text-sm text-foreground">{entry.message}</p>
                   </div>
-                  <p className="mt-2 text-sm text-foreground">{entry.message}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
+                ))}
+              </div>
+            </Card>
+          </div>
         </section>
       </div>
     </div>
@@ -854,7 +969,9 @@ function MetricCard({
           <p className="text-sm text-muted">{label}</p>
           <p className="mt-2 text-3xl font-semibold text-foreground">{value}</p>
         </div>
-        <div className="rounded-2xl bg-primary/10 p-3 text-primary dark:bg-primary/20 dark:text-primary">{icon}</div>
+        <div className="rounded-2xl bg-primary/10 p-3 text-primary dark:bg-primary/20 dark:text-primary">
+          {icon}
+        </div>
       </div>
       <p className="mt-4 text-sm text-muted">{helper}</p>
     </Card>
@@ -863,27 +980,12 @@ function MetricCard({
 
 function StatPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-surface px-3 py-2 dark:bg-surface">
-      <p className="text-xs uppercase tracking-[0.2em] text-muted">{label}</p>
-      <p className="mt-1 font-semibold text-foreground">{value}</p>
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-3 py-3 dark:border-border dark:bg-surface">
+      <p className="text-[11px] uppercase tracking-[0.18em] text-muted">{label}</p>
+      <p className="font-semibold text-foreground">{value}</p>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

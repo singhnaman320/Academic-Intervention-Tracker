@@ -1,4 +1,4 @@
-import { handleApiError, noContent, ok } from "@/lib/api";
+﻿import { handleApiError, noContent, ok } from "@/lib/api";
 import {
   forbiddenResponse,
   requireApiUser,
@@ -6,7 +6,11 @@ import {
 } from "@/lib/api-auth";
 import { connectToDatabase } from "@/lib/db";
 import { createActivityLog } from "@/lib/activity-log";
-import { canManageInterventions } from "@/lib/permissions";
+import {
+  canAdjustInterventionImpact,
+  canManageInterventions,
+  canManageOwnedIntervention,
+} from "@/lib/permissions";
 import { refreshStudentRiskScore } from "@/lib/student-service";
 import { interventionSchema } from "@/validations/intervention";
 import { InterventionModel } from "@/models/intervention";
@@ -25,12 +29,29 @@ export async function PATCH(
     await connectToDatabase();
     const { interventionId } = await context.params;
     const body = interventionSchema.parse(await request.json());
+    const existingIntervention = await InterventionModel.findById(interventionId);
+
+    if (!existingIntervention) {
+      throw new Error("Intervention not found.");
+    }
+
+    if (!canManageOwnedIntervention(user, existingIntervention.ownerId.toString())) {
+      return forbiddenResponse();
+    }
+
+    const canAdjustImpact = canAdjustInterventionImpact(user);
 
     const intervention = await InterventionModel.findByIdAndUpdate(
       interventionId,
       {
         ...body,
         nextReviewAt: body.nextReviewAt ? new Date(body.nextReviewAt) : undefined,
+        attendanceDelta: canAdjustImpact
+          ? body.attendanceDelta
+          : existingIntervention.attendanceDelta,
+        performanceDelta: canAdjustImpact
+          ? body.performanceDelta
+          : existingIntervention.performanceDelta,
       },
       { new: true },
     );
@@ -73,12 +94,17 @@ export async function DELETE(
 
     await connectToDatabase();
     const { interventionId } = await context.params;
-    const intervention = await InterventionModel.findByIdAndDelete(interventionId);
+    const intervention = await InterventionModel.findById(interventionId);
 
     if (!intervention) {
       throw new Error("Intervention not found.");
     }
 
+    if (!canManageOwnedIntervention(user, intervention.ownerId.toString())) {
+      return forbiddenResponse();
+    }
+
+    await InterventionModel.findByIdAndDelete(interventionId);
     await refreshStudentRiskScore(intervention.studentId.toString());
 
     await createActivityLog({
